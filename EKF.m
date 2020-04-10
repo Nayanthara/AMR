@@ -1,9 +1,4 @@
-function[mu,sigma] = EKF(mu0,sigma0,gFunc,gJacFunc,Ut,hFunc,hJacFunc,hParams,Zt,R,Q,tolerance)
-% HGPS: Measurement function for overhead localization.
-%
-%   OUTPUTS
-%       mu              Mean of estimated position
-%       sigma           Covariance matrix of estimated position
+function[mu,sigma] = EKF(mu0,sigma0,gFunc,gJacFunc,Ut,hFunc,hJacFunc,hParams,Zt,validIndices,R,Q,tolerance)
 %
 %   Cornell University
 %   Autonomous Mobile Robots
@@ -11,7 +6,6 @@ function[mu,sigma] = EKF(mu0,sigma0,gFunc,gJacFunc,Ut,hFunc,hJacFunc,hParams,Zt,
 %   SAJAN, NAYANTHARA
     
 %   Resize matrices
-    validIndices = find(~isnan(Zt(:,1))& Zt(:,1)> 0.19);
     Q = Q(validIndices,validIndices);
 
 %  Prediction step

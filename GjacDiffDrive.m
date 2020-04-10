@@ -21,7 +21,14 @@ function[Gt] = GjacDiffDrive(initPose,Ut)
 distance = Ut(1);
 angle    = Ut(2);
 
-Gt = [1 0 -distance*sin(initPose(3,1)+(angle/2));...
-      0 1  distance*cos(initPose(3,1)+(angle/2));...
-      0 0  1                                    ];
+if (angle == 0)
+    d = distance;
+else
+    d = sign(distance)*sqrt(2*(distance/angle)^2*(1-cos(angle)));
+end
+
+% find the Jacobian matrix according to the formula
+Gt = [ 1 0 -d*sin(initPose(3,1) + angle/2);
+       0 1  d*cos(initPose(3,1) + angle/2) ;
+       0 0  1  ];
 end

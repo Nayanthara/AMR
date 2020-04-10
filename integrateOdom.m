@@ -36,7 +36,7 @@ end
 x     = x + chordLen*cos(theta+ angle/2);
 y     = y + chordLen*sin(theta+ angle/2);
 theta = theta + angle;
-pose  = [x; y; theta];
+pose  = wrap([x y theta])';
 
 end
 

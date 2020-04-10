@@ -29,10 +29,10 @@ sensorOrigin            = hParams.(mapFields{2});
 angles                  = hParams.(mapFields{3});
 delta = 0.025;
 
-depth         = depthPredict( pose                            ,hParams);
-depthDelX     = depthPredict([pose(1)+delta; pose(2:3)]       ,hParams);
-depthDelY     = depthPredict([pose(1); pose(2)+delta; pose(3)],hParams);
-depthDelTheta = depthPredict([pose(1:2); pose(3)+delta]       ,hParams);
+depth         = depthPredict( pose                             ,hParams);
+depthDelX     = depthPredict([pose(1)+delta; pose(2:3)]        ,hParams);
+depthDelY     = depthPredict([pose(1); pose(2)+delta; pose(3)] ,hParams);
+depthDelTheta = depthPredict(wrap([pose(1:2); pose(3)+delta]')',hParams);
 
 Ht = [(depthDelX     - depth)/delta ...
       (depthDelY     - depth)/delta ...

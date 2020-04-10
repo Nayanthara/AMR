@@ -12,6 +12,6 @@ function[pose] = hGPS(initPose,~)
 %   Homework #4
 %   SAJAN, NAYANTHARA
 
-pose = wrapAroundCorrection(initPose);
+pose = wrap(initPose')';
 
 end

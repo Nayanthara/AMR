@@ -1,7 +1,6 @@
-function[] = plotEKFTrajectories(map,txt)
+function[] = plotEKFTrajectories(map,txt,dataStore)
 % This function plots the required graphs for EKF implementation
 
-global dataStore;
 figure
 hold on
 plot(dataStore.ekfMu(:,2)',dataStore.ekfMu(:,3)','LineWidth',1.2);
