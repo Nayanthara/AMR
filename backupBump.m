@@ -30,7 +30,7 @@ if nargin < 1
     disp('ERROR: TCP/IP port object not provided.');
     return;
 elseif nargin < 2
-    maxTime = 500;
+    maxTime = 3600;
 end
 
 
@@ -53,39 +53,49 @@ dataStore = struct('truthPose', [],...
 noRobotCount = 0;
 
 tic
+i = 1;
+sgn = 1;
 while toc < maxTime
     
     % READ & STORE SENSOR DATA
     [noRobotCount,dataStore]=readStoreSensorData(Robot,noRobotCount,dataStore);
     % Extact relevant fields into another array
     bump = dataStore.bump(end,[2 3 7] );
-    
     % CONTROL FUNCTION (send robot commands)
     
+    if(mod(i,15)==0)
+        turnAngle(Robot, 0.15,-90);
+        i =i+1;
+        sgn = -sgn;
+    end
+    
     % Set forward velocity
-    [cmdV,cmdW]= limitCmds(0.45,0,0.1,0.13);
-    SetFwdVelAngVelCreate(CreatePort, cmdV,cmdW);
+    [cmdV,cmdW]= limitCmds(0.45,0.15,0.25,0.15);
+         
+    SetFwdVelAngVelCreate(Robot, cmdV,sgn*cmdW);
     
     if sum(bump)>0   % Sum>0 if atleast one of BumpRight, BumpLeft, BumpFront = 1
-        SetFwdVelAngVelCreate(CreatePort, 0,0 );    % Stop moving forward
+        SetFwdVelAngVelCreate(Robot, 0,0 );    % Stop moving forward
         pause(0.1);
-        travelDist(CreatePort, 0.45, -0.25);    % Move 0.25m backward at 0.45m/s
-        turnAngle(CreatePort, 0.15, -30);   % Turn 30 degrees clockwise at 0.15rad/s
-        SetFwdVelAngVelCreate(CreatePort, cmdV,cmdW);   
+        travelDist(Robot, 0.25, -0.4);    % Move 0.4m backward at 0.25m/s
+        turnAngle(Robot, 0.15, sgn*5);
+        SetFwdVelAngVelCreate(Robot, cmdV,sgn*cmdW);
+        i =i+1;
     else
-        SetFwdVelAngVelCreate(CreatePort, cmdV, cmdW );
+        SetFwdVelAngVelCreate(Robot, cmdV,sgn*cmdW);
     end
         
     % if overhead localization loses the robot for too long, stop it
     if noRobotCount >= 3
-        SetFwdVelAngVelCreate(CreatePort, 0,0);
+        SetFwdVelAngVelCreate(Robot, 0,0);
     else
-        SetFwdVelAngVelCreate(CreatePort, cmdV, cmdW );
+        SetFwdVelAngVelCreate(Robot, cmdV,sgn*cmdW);
     end
-    
     pause(0.1);
 end
 
 % set forward and angular velocity to zero (stop robot) before exiting the function
-SetFwdVelAngVelCreate(CreatePort, 0,0 );
+SetFwdVelAngVelCreate(Robot, 0,0 );
+
+save('run_data_6.mat','dataStore');
 
